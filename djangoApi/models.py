@@ -13,13 +13,11 @@ DIRECTION_UNIT = (
 
 
 class Product(models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=30)
     measurement_unit = models.CharField(max_length=50, choices=MEASUREMENT_UNIT, default='', )
 
 
 class Operation(models.Model):
     date = models.DateField()
-    id = models.IntegerField(primary_key=True)
     direction = models.CharField(default='', choices=DIRECTION_UNIT, max_length=50)
     amount = models.IntegerField(default=0)

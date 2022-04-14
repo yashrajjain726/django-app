@@ -1,80 +1,102 @@
+from rest_framework import status
 from django.shortcuts import render
-import io
-
-from django.http import HttpResponse
-from django.views import View
-from rest_framework.parsers import JSONParser
-from rest_framework.renderers import JSONRenderer
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from djangoApi.models import Product, Operation
-from django.utils.decorators import method_decorator
-from .serializers import ProductSerializer
-from django.views.decorators.csrf import csrf_exempt
+from .serializers import ProductSerializer, OperationSerializer
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class ProductAPI(View):
-    def get(self, request, *args, **kwargs):
-        json_data = request.body
-        stream = io.BytesIO(json_data)
-        python_data = JSONParser().parse(stream)
-        id = python_data.get('id', None)
+class ProductAPI(APIView):
+    # GET PRODUCT/PRODUCTS
+    def get(self, request, id=None):
+        id = id
         if id is not None:
             product = Product.objects.get(id=id)
             serializer = ProductSerializer(product)
-            json_data = JSONRenderer().render(serializer.data)
-            return HttpResponse(json_data, content_type='application/json')
+            return Response(serializer.data)
         product = Product.objects.all()
         serializer = ProductSerializer(product, many=True)
-        json_data = JSONRenderer().render(serializer.data)
-        return HttpResponse(json_data, content_type='application/json')
+        return Response(serializer.data,)
 
-    def post(self, request, *args, **kwargs):
-        json_data = request.body
-        stream = io.BytesIO(json_data)
-        python_data = JSONParser().parse(stream)
-        serializer = ProductSerializer(data=python_data)
+
+    # CREATE PRODUCT
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            msg = {'msg': "Your data was pushed to the database"}
-            json_data = JSONRenderer().render(msg)
-            return HttpResponse(json_data, content_type='application/json')
-        json_data = JSONRenderer().render(serializer.errors)
-        return HttpResponse(json_data, content_type='application/json')
+            return Response({'msg': "Your data was pushed to the database"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, *args, **kwargs):
-        json_data = request.body
-        stream = io.BytesIO(json_data)
-        python_data = JSONParser().parse(stream)
-        id = python_data.get('id')
+    # UPDATE PRODUCT
+    def put(self, request, id):
+        id = id
         product = Product.objects.get(id=id)
-        serializer = ProductSerializer(product, data=python_data, partial=True)
+        serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            msg = {'msg': "Your data was updated on the database"}
-            json_data = JSONRenderer().render(msg)
-            return HttpResponse(json_data, content_type='application/json')
-        json_data = JSONRenderer().render(serializer.errors)
-        return HttpResponse(json_data, content_type='application/json')
+            return Response({'msg': "Your data was updated on the database"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        json_data = request.body
-        stream = io.BytesIO(json_data)
-        python_data = JSONParser().parse(stream)
-        id = python_data.get('id')
+    # DELETE PRODUCT
+    def delete(self, request, id):
+        id = id
         product = Product.objects.get(id=id)
         product.delete()
-        msg = {'msg': "Your data was deleted"}
-        json_data = JSONRenderer().render(msg)
-        return HttpResponse(json_data, content_type='application/json')
+        return Response({'msg': "Your data was deleted"})
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class OperationAPI(View):
+class OperationAPI(APIView):
+    # GET OPERATION/OPERATIONS
+    def get(self, request, id=None):
+        id = id
+        if id is not None:
+            operation = Operation.objects.get(id=id)
+            serializer = OperationSerializer(operation)
+            return Response(serializer.data)
+        operation = Operation.objects.all()
+        serializer = OperationSerializer(operation, many=True)
+        return Response(serializer.data,)
+
+    # CREATE OPERATION
+    def post(self, request):
+        serializer = OperationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': "Your data was pushed to the database"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # UPDATE OPERATION
+    def put(self, request, id):
+        id = id
+        operation= Operation.objects.get(id=id)
+        serializer = OperationSerializer(operation, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg': "Your data was updated on the database"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE OPERATION
+    def delete(self, request, id):
+        id = id
+        operation = Operation.objects.get(id=id)
+        operation.delete()
+        return Response({'msg': "Your data was deleted"})
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class OperationFilterAPI(APIView):
+    # LIST ALL OPERATIONS
     def get(self, request, *args, **kwargs):
         display_data = Operation.objects.all()
         return render(request, 'index.html', {"data": display_data})
 
+    # LIST ALL OPERATIONS BETWEEN FROM_DATE & TO_DATE
     def post(self, request, *args, **kwargs):
         from_date = request.POST.get('fromdate')
         to_date = request.POST.get('todate')
