@@ -1,26 +1,26 @@
 import requests
 from rest_framework import serializers, request
 
-from djangoApi.models import Product
+from djangoApi.models import Product, Operation
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
+        fields = ['id', 'name', 'measurement_unit']
+
+    def validate_measurement_unit(self, data):
+        if data not in ['Kg', 'Liters', 'Units']:
+            raise serializers.ValidationError('Choose from the choices (Kg,Liters,Units)')
+        return data
 
 
+class OperationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operation
+        fields = ['date', 'id', 'direction', 'amount']
 
-
-class ProductSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    measurement_unit = serializers.CharField()
-
-    def create(self, validate_data):
-        return Product.objects.create(**validate_data)
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.measurement_unit = validated_data.get('measurement_unit', instance.measurement_unit)
-        instance.save()
-        return instance
+    def validate_direction(self, data):
+        if data not in ['IN', 'OUT']:
+            raise serializers.ValidationError('Choose from the choices (IN,OUT)')
+        return data

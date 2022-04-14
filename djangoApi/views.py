@@ -6,7 +6,7 @@ from django.views import View
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
-from djangoApi.models import Product
+from djangoApi.models import Product, Operation
 from django.utils.decorators import method_decorator
 from .serializers import ProductSerializer
 from django.views.decorators.csrf import csrf_exempt
@@ -67,3 +67,16 @@ class ProductAPI(View):
         msg = {'msg': "Your data was deleted"}
         json_data = JSONRenderer().render(msg)
         return HttpResponse(json_data, content_type='application/json')
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class OperationAPI(View):
+    def get(self, request, *args, **kwargs):
+        display_data = Operation.objects.all()
+        return render(request, 'index.html', {"data": display_data})
+
+    def post(self, request, *args, **kwargs):
+        from_date = request.POST.get('fromdate')
+        to_date = request.POST.get('todate')
+        search_result = Operation.objects.filter(date__range=[from_date, to_date])
+        return render(request, 'index.html', {"data": search_result})
