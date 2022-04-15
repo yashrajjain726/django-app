@@ -11,6 +11,7 @@ from .serializers import ProductSerializer, OperationSerializer
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ProductAPI(APIView):
+
     # GET PRODUCT/PRODUCTS
     def get(self, request, id=None):
         id = id
@@ -90,6 +91,7 @@ class OperationAPI(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class OperationFilterAPI(APIView):
+
     # LIST ALL OPERATIONS
     def get(self, request, *args, **kwargs):
         display_data = Operation.objects.all()
