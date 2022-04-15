@@ -18,10 +18,9 @@ class ProductAPI(APIView):
             product = Product.objects.get(id=id)
             serializer = ProductSerializer(product)
             return Response(serializer.data)
-        product = Product.objects.all()
-        serializer = ProductSerializer(product, many=True)
-        return Response(serializer.data,)
-
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
 
     # CREATE PRODUCT
     def post(self, request):
@@ -51,6 +50,7 @@ class ProductAPI(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class OperationAPI(APIView):
+
     # GET OPERATION/OPERATIONS
     def get(self, request, id=None):
         id = id
@@ -58,9 +58,9 @@ class OperationAPI(APIView):
             operation = Operation.objects.get(id=id)
             serializer = OperationSerializer(operation)
             return Response(serializer.data)
-        operation = Operation.objects.all()
-        serializer = OperationSerializer(operation, many=True)
-        return Response(serializer.data,)
+        operations = Operation.objects.all()
+        serializer = OperationSerializer(operations, many=True)
+        return Response(serializer.data, )
 
     # CREATE OPERATION
     def post(self, request):
@@ -70,11 +70,10 @@ class OperationAPI(APIView):
             return Response({'msg': "Your data was pushed to the database"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     # UPDATE OPERATION
     def put(self, request, id):
         id = id
-        operation= Operation.objects.get(id=id)
+        operation = Operation.objects.get(id=id)
         serializer = OperationSerializer(operation, data=request.data)
         if serializer.is_valid():
             serializer.save()
