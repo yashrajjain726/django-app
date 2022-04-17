@@ -7,7 +7,7 @@ from djangoApi.models import Product, Operation
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'measurement_unit']
+        fields = ['product_id', 'name', 'measurement_unit']
 
     # Validating Measurement Field
     def validate_measurement_unit(self, data):
@@ -20,7 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class OperationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operation
-        fields = ['date', 'id', 'direction', 'amount']
+        fields = ['product_id', 'date', 'direction', 'amount']
 
     # Validating Direction Field
     def validate_direction(self, data):

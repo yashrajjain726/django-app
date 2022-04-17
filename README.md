@@ -38,11 +38,9 @@ To run the server, you need to run the command
 
 ###  Urls in Server
 1.  `/admin/` -> to view database along wiith its IAM role and authorization
-2. `/product-api/` -> To get list of all data present in the product database
-3. `/product-api/<int:id>/`-> to perform CRUD operations on product database using the server-panel
-4. `/operation-api/` -> To get list of all data present in the operation database
-5. `/operation-api/<int:id>/`-> to perform CRUD operations on operation database using the server-panel
-6. `/operation/filter/` -> to get operation data between dates using `from_date` and `to_date` params
+2. `/product-api/` -> To get list of all data present in the product database and perform CRUD operation with it
+4. `/operation-api/` -> To get list of all data present in the operation database and perform CRUD operation with it
+6. `/operation-filter/` -> to get operation data between dates using `from_date` and `to_date` params
 
 
 

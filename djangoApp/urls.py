@@ -1,13 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
 from djangoApi import views
 
+router = DefaultRouter()
+
+router.register('products-api', views.ProductAPI, basename='Product-API')
+router.register('operation-api', views.OperationAPI, basename='Operation-API')
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('products-api/', views.ProductAPI.as_view()),
-    path('product-api/<int:id>/', views.ProductAPI.as_view()),
-    path('operation-api/', views.OperationAPI.as_view()),
-    path('operation-api/<int:id>/', views.OperationAPI.as_view()),
-    path('operation/filter', views.OperationFilterAPI.as_view())
+    path('operation-filter', views.OperationFilterAPI.as_view()),
+    path('', include(router.urls))
 ]
